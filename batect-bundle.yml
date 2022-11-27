@@ -1,0 +1,53 @@
+containers:
+  storyshots:
+    image: eichelkrautadam/storyshots:latest
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - type: cache
+        name: node_modules
+        container: /code/node_modules
+      - type: cache
+        name: npm_cache
+        container: /home/container-user/.npm/_cacache
+    working_directory: /code
+    enable_init_process: true
+    run_as_current_user:
+      enabled: true
+      home_directory: /home/pptruser
+
+  storybook-server:
+    image: nginx:alpine
+    volumes:
+      - local: ./storybook-static
+        container: /usr/share/nginx/html
+    ports:
+      - local: 8080
+        container: 80
+
+tasks:
+  install-storyshot-dependencies:
+    run:
+      container: storyshots
+      command: npm install
+
+  build-storyshots-storybook:
+    prerequisites:
+      - install-dependencies
+    run:
+      container: storyshots
+      command: npm run build-storybook
+
+  storybook-server:
+    run:
+      container: storybook-server
+
+  storyshots:
+    prerequisites:
+      - build-storyshots-storybook
+    dependencies:
+      - storybook-server
+    run:
+      container: storyshots
+      command: npm run storyshots -- --watchAll=false
