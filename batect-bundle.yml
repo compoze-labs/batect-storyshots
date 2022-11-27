@@ -2,7 +2,7 @@ containers:
   storyshots:
     image: eichelkrautadam/storyshots:latest
     volumes:
-      - local: .
+      - local: <{batect.project_directory}
         container: /code
         options: cached
       - type: cache
@@ -15,12 +15,12 @@ containers:
     enable_init_process: true
     run_as_current_user:
       enabled: true
-      home_directory: /home/pptruser
+      home_directory: /home/container-user
 
   storybook-server:
     image: nginx:alpine
     volumes:
-      - local: ./storybook-static
+      - local: <{batect.project_directory}/storybook-static
         container: /usr/share/nginx/html
     ports:
       - local: 8080
@@ -30,11 +30,11 @@ tasks:
   install-storyshot-dependencies:
     run:
       container: storyshots
-      command: npm install
+      command: npm install --no-package-lock --ignore-scripts
 
   build-storyshots-storybook:
     prerequisites:
-      - install-dependencies
+      - install-storyshot-dependencies
     run:
       container: storyshots
       command: npm run build-storybook

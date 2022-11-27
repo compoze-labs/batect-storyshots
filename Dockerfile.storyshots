@@ -22,5 +22,7 @@ RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /app
 
+RUN npm install -g pnpm
+
 # Run everything after as non-privileged user.
 USER pptruser
