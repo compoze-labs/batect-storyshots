@@ -24,7 +24,7 @@ jobs:
         with:
           images: eichelkrautadam/storyshots
           tags: |
-            eichelkrautadam/storyshots:latest
+            latest
             type=sha
 
       - name: Build and push Docker image
